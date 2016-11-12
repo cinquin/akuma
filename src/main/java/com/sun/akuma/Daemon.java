@@ -79,14 +79,20 @@ public class Daemon {
      * @param daemonize
      *      Parse the command line arguments and if the application should be
      *      daemonized, pass in true.
+     * @return If not already daemonized, PID of daemon process that was created
+     *      (if daemonize is true) or current PID. If already daemonized, current
+     *      PID.
      */
-    public void all(boolean daemonize) throws Exception {
-        if(isDaemonized())
+    public int all(boolean daemonize) throws Exception {
+        if(isDaemonized()) {
             init();
+            return LIBC.getpid();
+        }
         else {
             if(daemonize) {
-                daemonize();
-                System.exit(0);
+                return daemonize();
+            } else {
+                return LIBC.getpid();
             }
         }
     }
@@ -102,14 +108,14 @@ public class Daemon {
     /**
      * Relaunches the JVM with the exact same arguments into the daemon.
      */
-    public void daemonize() throws IOException {
-        daemonize(JavaVMArguments.current());
+    public int daemonize() throws IOException {
+        return daemonize(JavaVMArguments.current());
     }
 
     /**
      * Relaunches the JVM with the given arguments into the daemon.
      */
-    public void daemonize(JavaVMArguments args) {
+    public int daemonize(JavaVMArguments args) {
         if(isDaemonized())
             throw new IllegalStateException("Already running as a daemon");
 
@@ -143,7 +149,8 @@ public class Daemon {
             System.exit(-1);
         }
 
-        // parent exits
+        // parent returns
+        return i;
     }
 
     /**
