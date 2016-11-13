@@ -102,7 +102,7 @@ public class Daemon {
      * via {@link #daemonize()}.
      */
     public boolean isDaemonized() {
-        return System.getProperty(Daemon.class.getName())!=null;
+        return System.getProperty("akuma_daemon")!=null;
     }
 
     /**
@@ -130,7 +130,7 @@ public class Daemon {
         }*/
 
         // let the child process now that it's a daemon
-        args.setSystemProperty(Daemon.class.getName(),"daemonized");
+        args.setSystemProperty("akuma_daemon","daemonized");
 
         // prepare for a fork
         String exe = getCurrentExecutable();
@@ -192,7 +192,7 @@ public class Daemon {
      * when they don't work correctly.
      */
     protected void closeDescriptors() throws IOException {
-        if(!Boolean.getBoolean(Daemon.class.getName()+".keepDescriptors")) {
+        if(!Boolean.getBoolean("akuma_daemon"+".keepDescriptors")) {
             System.out.close();
             System.err.close();
             System.in.close();
@@ -283,5 +283,5 @@ public class Daemon {
         }
     }
 
-    private static final Logger LOGGER = Logger.getLogger(Daemon.class.getName());
+    private static final Logger LOGGER = Logger.getLogger("akuma_daemon");
 }
